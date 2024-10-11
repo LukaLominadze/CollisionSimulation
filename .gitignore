@@ -1,6 +1,7 @@
 .vs/
 /bin/
 /bin-int/
+.gitmodules
 Submodules/
 releases/
 Simulation.sln
