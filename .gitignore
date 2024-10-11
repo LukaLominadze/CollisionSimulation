@@ -1,0 +1,9 @@
+.vs/
+/bin/
+/bin-int/
+Submodules/
+releases/
+Simulation.sln
+Simulation/Simulation.vcxproj
+Simulation/Simulation.vcxproj.user
+Simulation/Simulation.vcxproj.filters
