@@ -7,3 +7,4 @@ Simulation.sln
 Simulation/Simulation.vcxproj
 Simulation/Simulation.vcxproj.user
 Simulation/Simulation.vcxproj.filters
+rebuild-windows-64-vs2022.bat

@@ -1,6 +1,7 @@
 import subprocess
 import platform
 import os
+import re
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 solution_dir = os.path.join(current_dir, '../../../')
@@ -32,7 +33,13 @@ if platform.system() == 'Windows':
 
             for j, line in enumerate(lines1):
                 if '<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />' in line:
-                    lines1.insert(j, '\t<ItemGroup>\n\t\t<ProjectReference Include="..Submodules\\GLRenderer\\GLRenderer.vcxproj">\n\t\t\t<Project>{' + glcore_guid + '}</Project>\n\t\t</ProjectReference>\n\t</ItemGroup>\n')
+                    lines1.insert(j, """
+<ItemGroup>
+    <ProjectReference Include="..\\Submodules\\GLRenderer\\GLRenderer.vcxproj">
+      <Project>{""" + glcore_guid + """}</Project>
+    </ProjectReference>
+</ItemGroup>
+""")
                     print('\nSuccess -> Added reference!')
                     break
                 
@@ -60,7 +67,7 @@ if platform.system() == 'Windows':
                                      "\t\t\t<PrecompiledHeader Condition=\"'$(Configuration)|$(Platform)'=='Distribution|x64'\">NotUsing</PrecompiledHeader>\n" +
                                      "\t\t\t<PrecompiledHeader Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">NotUsing</PrecompiledHeader>\n" +
                                      "\t\t</ClCompile>\n")
-                    print('Success! -> configuted pch settings in other source files!\n')
+                    print('Success! -> configured pch settings in other source files!\n')
                     break
 
         with open(vcxproj_glcore, "w") as f2:
