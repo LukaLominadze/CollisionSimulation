@@ -2,33 +2,23 @@
 
 #include <GLRenderer.h>
 
+#include "simulations/Simulation.h"
+
 class SimulationLayer : public Layer
 {
 public:
-	SimulationLayer();
-	virtual ~SimulationLayer() override;
-
 	void OnAttach() override;
 	void OnEvent(Event& event) override;
 	void OnUpdate(float timestep) override;
 	void OnRender(Renderer& renderer) override;
 	void OnImGuiRender() override;
-private:
-	VertexArray m_vao;
-	VertexBuffer m_vbo;
-	IndexBuffer m_ibo;
-	Shader* p_shader;
-	Texture* p_texture;
-	ImVec4 m_clearColor;
-	ImVec4 m_imageColor;
 
-	OrthographicCameraController m_cameraController;
+	template<typename T>
+	void RegisterSimulation(const std::string& name) {
+		LOG("Registering simulation... " << name)
+			m_simulations.push_back(std::make_pair(name, []() { return new T(); }));
+	}
 private:
-	struct Circle {
-		glm::vec3 Position;
-		glm::vec3 Scale;
-		ImVec4 Color;
-	};
-
-	std::vector<Circle> m_circles;
+	Simulation* p_currentSimulation = nullptr;
+	std::vector<std::pair<std::string, std::function<Simulation* ()>>> m_simulations;
 };
