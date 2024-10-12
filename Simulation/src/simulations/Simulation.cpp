@@ -48,6 +48,7 @@ Simulation::Simulation()
     std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
     for (int i = 0; i < 60; i++) {
         m_circles.emplace_back(Circle(rd, dist));
+        m_circleCount++;
     }
 }
 
@@ -62,6 +63,27 @@ Simulation::~Simulation()
 
     delete p_shader;
     delete p_texture;
+}
+
+void Simulation::OnUpdate(float timestep)
+{
+    m_cameraController.OnUpdate(timestep);
+    Test::Timer timer;
+    timer.StartTimerAndReturnSeconds();
+    for (Circle& circle : m_circles) {
+        circle.OnUpdate(timestep);
+    }
+    m_elapsedTime += timestep;
+    if (m_elapsedTime >= m_fixedTimestep) {
+        OnFixedUpdate();
+        m_elapsedTime = 0.0f;
+    }
+    m_ms = timer.EndTimerAndReturnSeconds() * 1000;
+    m_timestep = timestep;
+
+    if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+        CreateCircle();
+    }
 }
 
 void Simulation::OnEvent(Event& event)
@@ -85,5 +107,13 @@ void Simulation::OnRender(Renderer& renderer)
 
         renderer.Draw(m_vao, m_ibo, *p_shader);
     }
+}
+
+void Simulation::CreateCircle()
+{
+    std::random_device rd;
+    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    m_circles.emplace_back(Circle(rd, dist));
+    m_circleCount++;
 }
 

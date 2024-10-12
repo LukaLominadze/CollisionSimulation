@@ -1,10 +1,12 @@
 #include "SimulationLayer.h"
 
 #include "simulations/SimulationBruteForce.h"
+#include "simulations/SimulationSpacePartition.h"
 
 void SimulationLayer::OnAttach()
 {
 	RegisterSimulation<SimulationBruteForce>("Brute Force Algortithm");
+	RegisterSimulation< SimulationSpacePartition>("Space Partitioning Algorithm");
 }
 
 void SimulationLayer::OnEvent(Event& event)

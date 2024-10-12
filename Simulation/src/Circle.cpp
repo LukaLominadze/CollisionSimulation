@@ -1,17 +1,18 @@
 #include "Circle.h"
 
+#include <algorithm>
+
 #define PI 3.14159265359
 
 Circle::Circle(std::random_device& device, std::uniform_real_distribution<float>& dist)
 {
-	float scale = abs(dist(device));
+	float scale = std::clamp(abs(dist(device)), 0.1f, 0.6f);
 
 	m_Position = glm::vec3(dist(device), dist(device), dist(device));
 	m_scale = glm::vec3(scale);
 	m_color = ImVec4(abs(dist(device)), abs(dist(device)), abs(dist(device)), 1.0f);
 
 	m_radius = scale * 0.1f;
-	LOG(m_radius);
 	m_mass = m_radius;
 
 	m_Velocity = glm::vec2(dist(device) * 0.4f, dist(device) * 0.4f);
@@ -34,21 +35,20 @@ void Circle::OnUpdate(float timestep)
 
 void Circle::Collide(Circle& other)
 {
-	float deltaX = other.m_Position.x - m_Position.x;
-	float deltaY = other.m_Position.y - m_Position.y;
-	float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
-	if (distance > m_radius + other.GetRadius()) {
+	glm::vec2 delta(other.m_Position.x - m_Position.x, other.m_Position.y - m_Position.y);
+	float distance = glm::length(delta);
+	float radiusSum = m_radius + other.GetRadius();
+	if (distance > radiusSum) {
 		return;
 	}
 
 	float offset = abs(distance - (m_radius + other.GetRadius()));
-	float normalX = deltaX / distance;
-	float normalY = deltaY / distance;
+	glm::vec2 normal(glm::normalize(delta));
 
-	m_Position = glm::vec3(m_Position.x - normalX * offset / 2.0f,
-						   m_Position.y - normalY * offset / 2.0f, m_Position.z);
-	other.m_Position = glm::vec3(other.m_Position.x + normalX * offset / 2.0f,
-								 other.m_Position.y + normalY * offset / 2.0f, other.m_Position.z);
+	m_Position = glm::vec3(m_Position.x - normal.x * offset / 2.0f,
+						   m_Position.y - normal.y * offset / 2.0f, m_Position.z);
+	other.m_Position = glm::vec3(other.m_Position.x + normal.x * offset / 2.0f,
+								 other.m_Position.y + normal.y * offset / 2.0f, other.m_Position.z);
 
 	float angleA = atan2(m_Velocity.y, m_Velocity.x);
 	float angleB = atan2(other.m_Velocity.y, other.m_Velocity.x);
@@ -75,9 +75,6 @@ void Circle::Collide(Circle& other)
 		2 * m_mass * velA * cos(angleA - angleContact)) / massSum) * sin(angleContact) +
 		velB * sin(angleB - angleContact) * sin(angleContact + PI / 2.0f);
 
-	glm::vec2 velocityA(velAx, velAy);
-	glm::vec2 velocityB(velBx, velBy);
-
-	m_Velocity = velocityA;
-	other.m_Velocity = velocityB;
+	m_Velocity = glm::vec2(velAx, velAy);
+	other.m_Velocity = glm::vec2(velBx, velBy);
 }
