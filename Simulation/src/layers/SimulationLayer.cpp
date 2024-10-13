@@ -42,6 +42,14 @@ void SimulationLayer::OnImGuiRender()
 		}
 	}
 	ImGui::End();
+	ImGui::Begin("Controls");
+	ImGui::Text("F11 - Fullscreen");
+	ImGui::Text("Mouse Scroll - Zoom I/O");
+	ImGui::Text("WASD - Move");
+	ImGui::Text("Right Click - Toggle Gizmos");
+	ImGui::Text("Enter - Spawn Circles");
+	ImGui::Text("Space - Pause Simulation");
+	ImGui::End();
 	if (p_currentSimulation) {
 		p_currentSimulation->OnImGuiRender();
 	}

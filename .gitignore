@@ -1,9 +1,9 @@
 .vs/
 /bin/
 /bin-int/
-.gitmodules
-Submodules/
-releases/
+/.gitmodules
+/Submodules
+/releases
 Simulation.sln
 Simulation/Simulation.vcxproj
 Simulation/Simulation.vcxproj.user
