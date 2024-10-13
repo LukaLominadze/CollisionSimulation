@@ -6,7 +6,7 @@
 
 Circle::Circle(std::random_device& device, std::uniform_real_distribution<float>& dist)
 {
-	float scale = std::clamp(abs(dist(device)), 0.1f, 0.6f);
+	float scale = std::clamp(abs(dist(device)), 0.1f, 0.3f);
 
 	m_Position = glm::vec3(dist(device), dist(device), dist(device));
 	m_scale = glm::vec3(scale);

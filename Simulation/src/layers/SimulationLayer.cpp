@@ -2,11 +2,13 @@
 
 #include "simulations/SimulationBruteForce.h"
 #include "simulations/SimulationSpacePartition.h"
+#include "simulations/SimulationQuadTree.h"
 
 void SimulationLayer::OnAttach()
 {
 	RegisterSimulation<SimulationBruteForce>("Brute Force Algortithm");
-	RegisterSimulation< SimulationSpacePartition>("Space Partitioning Algorithm");
+	RegisterSimulation<SimulationSpacePartition>("Space Partitioning Algorithm");
+	RegisterSimulation<SimulationQuadTree>("Quad Tree Algorithm");
 }
 
 void SimulationLayer::OnEvent(Event& event)

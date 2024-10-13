@@ -48,13 +48,32 @@ void SimulationSpacePartition::OnFixedUpdate()
 	}
 }
 
+void SimulationSpacePartition::OnGizmoRender(Renderer& renderer)
+{
+	p_shader->SetUniform4f("u_Color", 0.4f, 0.0f, 1.0f, 1.0f);
+
+	float gridRealSize = m_gridSize / 10.0f;
+
+	for (float x = -1.0f; x < 0.9f; x += gridRealSize) {
+		for (float y = -1.0f; y < 0.9f; y += gridRealSize) {
+			glm::vec3 translation(x + gridRealSize / 2.0f, y + gridRealSize / 2.0f, 0.0f);
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+			model = glm::scale(model, glm::vec3(m_gridSize, m_gridSize, 1.0f));
+			glm::mat4 mvp = m_cameraController.GetCamera().GetViewProjectionMatrix() * model;
+			p_shader->SetUniformMat4f("u_MVP", mvp);
+
+			renderer.Draw(m_vao, m_ibo, *p_shader);
+		}
+	}
+}
+
 void SimulationSpacePartition::OnImGuiRender()
 {
 	ImGui::Begin("Stats");
 
 	ImGui::Text("Space Partitioning Algorithm\n\nThis algorithm creates a grid \nof the existing scene");
 	ImGui::Text("where every object gets \nassigned to that grid");
-	ImGui::Text("based on it's position. \nThis way the objects only look through\nTheir grid and their sorrounding\ngrids. Making this algorithm\n a runtime complexity of O(nlongn)\n\n\n");
+	ImGui::Text("based on it's position. \nThis way the objects only look through\nTheir grid and their sorrounding\ngrids. Making this algorithm\na runtime complexity of O(nlongn)\n\n\n");
 
 	ImGui::Text("Algorithm speed");
 	ImGui::Text((std::to_string(m_ms) + " ms.").c_str());

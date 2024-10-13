@@ -9,6 +9,7 @@ public:
 	SimulationSpacePartition();
 
 	void OnFixedUpdate() override;
+	void OnGizmoRender(Renderer& renderer) override;
 	void OnImGuiRender() override;
 private:
 	int GetGridIndex(float x, float y);
