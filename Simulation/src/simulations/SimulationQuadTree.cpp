@@ -36,9 +36,9 @@ void SimulationQuadTree::OnGizmoRender(Renderer& renderer)
 	float r = 1.0f;
 	for (const Boundary& boundary : m_boundaries) {
 		p_shader->SetUniform4f("u_Color", r, 0.0f, b, 1.0f);
-		glm::vec3 translation(boundary.x1 + boundary.width / 2.0f, boundary.y1 + boundary.height / 2.0f, 0.0f);
+		glm::vec3 translation(boundary.x1 + (boundary.x2 - boundary.x1) / 2.0f, boundary.y1 + (boundary.y2 - boundary.y1) / 2.0f, 0.0f);
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-		model = glm::scale(model, glm::vec3(boundary.width * 5, boundary.height * 5, 1.0f));
+		model = glm::scale(model, glm::vec3((boundary.x2 - boundary.x1) * 5, (boundary.y2 - boundary.y1) * 5, 1.0f));
 		glm::mat4 mvp = m_cameraController.GetCamera().GetViewProjectionMatrix() * model;
 		p_shader->SetUniformMat4f("u_MVP", mvp);
 

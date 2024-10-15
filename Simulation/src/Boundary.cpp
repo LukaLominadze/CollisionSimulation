@@ -6,8 +6,6 @@ Boundary::Boundary(const Boundary& other)
 	x2 = other.x2;
 	y1 = other.y1;
 	y2 = other.y2;
-	width = other.width;
-	height = other.height;
 }
 
 Boundary::Boundary(float x, float y, float width, float height) {
@@ -15,12 +13,10 @@ Boundary::Boundary(float x, float y, float width, float height) {
 	y1 = y - height / 2.0f;
 	x2 = x + width / 2.0f;
 	y2 = y + height / 2.0f;
-	this->width = width;
-	this->height = height;
 }
 
 bool Boundary::ContainsCenter(const Boundary& circle) {
-	glm::vec2 position(circle.x1 + circle.width / 2.0f, circle.y1 + circle.height / 2.0f);
+	glm::vec2 position(circle.x1 + (circle.x2 - circle.x1) / 2.0f, circle.y1 + (circle.y2 - circle.y1) / 2.0f);
 	return (position.x >= x1 && position.x <= x2 && position.y <= y2 && position.y >= y1);
 }
 

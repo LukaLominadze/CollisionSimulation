@@ -11,5 +11,5 @@ struct Boundary {
 	bool IntersectsCircle(const Circle& circle);
 	bool Intersects(const Boundary& other);
 
-	float x1, y1, x2, y2, width, height;
+	float x1, y1, x2, y2;
 };

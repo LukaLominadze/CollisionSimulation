@@ -37,32 +37,36 @@ bool QuadTree::Insert(const Boundary& circle, int index)
 	if (!m_boundary.ContainsCenter(circle)) {
 		return false;
 	}
-	if (m_trees[NORTHWEST].Insert(circle, index)) return true;
-	if (m_trees[NORTHEAST].Insert(circle, index)) return true;
-	if (m_trees[SOUTHEAST].Insert(circle, index)) return true;
-	if (m_trees[SOUTHWEST].Insert(circle, index)) return true;
+	for (QuadTree& tree : m_trees) {
+		if (tree.Insert(circle, index)) return true;
+	}
 }
 
 void QuadTree::Subdivide()
 {
-	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x1 + m_boundary.width / 4.0f, m_boundary.y2 - m_boundary.height / 4.0f,
-										   m_boundary.width / 2.0f, m_boundary.height / 2.0f), m_capacity));
-	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x2 - m_boundary.width / 4.0f, m_boundary.y2 - m_boundary.height / 4.0f,
-										   m_boundary.width / 2.0f, m_boundary.height / 2.0f), m_capacity));
-	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x2 - m_boundary.width / 4.0f, m_boundary.y1 + m_boundary.height / 4.0f,
-										   m_boundary.width / 2.0f, m_boundary.height / 2.0f), m_capacity));
-	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x1 + m_boundary.width / 4.0f, m_boundary.y1 + m_boundary.height / 4.0f,
-										   m_boundary.width / 2.0f, m_boundary.height / 2.0f), m_capacity));
-	std::vector<int> circlesToErase;
+	float width = m_boundary.x2 - m_boundary.x1;
+	float height = m_boundary.y2 - m_boundary.y1;
+	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x1 + width / 4.0f, m_boundary.y2 - height / 4.0f,
+										   width / 2.0f, height / 2.0f), m_capacity));
+	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x2 - width / 4.0f, m_boundary.y2 - height / 4.0f,
+										   width / 2.0f, height / 2.0f), m_capacity));
+	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x2 - width / 4.0f, m_boundary.y1 + height / 4.0f,
+										   width / 2.0f, height / 2.0f), m_capacity));
+	m_trees.emplace_back(QuadTree(Boundary(m_boundary.x1 + width / 4.0f, m_boundary.y1 + height / 4.0f,
+										   width / 2.0f, height / 2.0f), m_capacity));
+	std::vector<int> indexesToErase;
 	for (int i = 0; i < m_indexes.size(); i++) {
-		if (m_trees[NORTHWEST].Insert(m_circles[i], m_indexes[i])) { circlesToErase.push_back(i); continue; }
-		if (m_trees[NORTHEAST].Insert(m_circles[i], m_indexes[i])) { circlesToErase.push_back(i); continue; }
-		if (m_trees[SOUTHEAST].Insert(m_circles[i], m_indexes[i])) { circlesToErase.push_back(i); continue; }
-		if (m_trees[SOUTHWEST].Insert(m_circles[i], m_indexes[i])) { circlesToErase.push_back(i); continue; }
+		for (QuadTree& tree : m_trees) {
+			if (tree.Insert(m_circles[i], m_indexes[i])) 
+			{
+				indexesToErase.push_back(i);
+				continue;
+			}
+		}
 	}
-	for (int i = circlesToErase.size() - 1; i >= 0; i--) {
-		m_circles.erase(m_circles.begin() + circlesToErase[i]);
-		m_indexes.erase(m_indexes.begin() + circlesToErase[i]);
+	for (int i = indexesToErase.size() - 1; i >= 0; i--) {
+		m_circles.erase(m_circles.begin() + i);
+		m_indexes.erase(m_indexes.begin() + i);
 	}
 	m_subdivided = true;
 }
@@ -86,10 +90,9 @@ std::vector<int> QuadTree::Query(Boundary range, std::vector<int>& found)
 		}
 	}
 	if (m_trees.size() != 0) {
-		m_trees[NORTHWEST].Query(range, found);
-		m_trees[NORTHEAST].Query(range, found);
-		m_trees[SOUTHEAST].Query(range, found);
-		m_trees[SOUTHWEST].Query(range, found);
+		for (QuadTree& tree : m_trees) {
+			tree.Query(range, found);
+		}
 	}
 	return found;
 }
